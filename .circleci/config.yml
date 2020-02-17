@@ -1,0 +1,26 @@
+version: 2
+
+jobs:
+  deploy:
+    docker:
+      - image: circleci/python:3.7
+    working_directory: ~/sam-apps
+    steps:
+      - run:
+          name: Install awscli
+          command: |
+            pip install --upgrade pip
+            pip install awscli aws-sam-cli
+      - checkout
+      - run: sam package --output-template-file packaged.yaml --s3-bucket sam-applications-trail
+      - run: sam deploy --template-file packaged.yaml --stack-name sam-applications-trail --capabilities CAPABILITY_IAM
+
+workflows:
+  version: 2
+  default:
+    jobs:
+      - deploy:
+          context: aws
+          filters:
+            branches:
+              only: master
