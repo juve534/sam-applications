@@ -12,6 +12,9 @@ jobs:
             pip install --upgrade pip
             pip install awscli aws-sam-cli
       - checkout
+      - run:
+          name: build application
+          command: make build
       - run: sam package --output-template-file packaged.yaml --s3-bucket sam-applications-trail
       - run: sam deploy --template-file packaged.yaml --stack-name sam-applications-trail --capabilities CAPABILITY_IAM
 
