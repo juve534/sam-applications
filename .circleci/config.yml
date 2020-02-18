@@ -3,20 +3,19 @@ version: 2
 jobs:
   deploy:
     docker:
-      - image: circleci/python:3.7
-    working_directory: ~/sam-apps
+      - image: circleci/golang:1.13
+    working_directory: /go/src/github.com/juve534/sam-applications
     steps:
       - run:
           name: Install awscli
           command: |
-            pip install --upgrade pip
-            pip install awscli aws-sam-cli
+            sudo apt-get update && sudo apt-get install -y awscli
       - checkout
       - run:
-          name: build application
+          name: build
           command: make build
-      - run: sam package --output-template-file packaged.yaml --s3-bucket sam-applications-trail
-      - run: sam deploy --template-file packaged.yaml --stack-name sam-applications-trail --capabilities CAPABILITY_IAM
+      - run: aws cloudformation package --template-file template.yaml --output-template-file packaged.yaml --s3-bucket sam-applications-trail
+      - run: aws cloudformation deploy --template-file packaged.yaml --stack-name sam-applications-trail --capabilities CAPABILITY_IAM
 
 workflows:
   version: 2
